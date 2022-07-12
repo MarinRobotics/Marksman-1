@@ -95,14 +95,16 @@ void opcontrol() {
 		rightY = master.get_analog(ANALOG_RIGHT_Y);
 
 		//deadzone of 5 units to combat controller drift
-		if ((rightY || rightX > 5) || (rightY || rightX < -5)){
-			//Right Drive -- move_velocity
-			rightFrontMotor.move_velocity(int((rightY - rightX)*motorMult));
-			rightBackMotor.move_velocity(int((rightY - rightX)*motorMult));
+		if (rightY || rightX > 5) {
+			if (rightY || rightX < -5){
+				//Right Drive -- move_velocity
+				rightFrontMotor.move_velocity(int((rightY - rightX)*motorMult));
+				rightBackMotor.move_velocity(int((rightY - rightX)*motorMult));
 
-			//Left Drive -- move_velocity
-			leftFrontMotor.move_velocity(int((rightY + rightX)*motorMult));
-			leftBackMotor.move_velocity(int((rightY + rightX)*motorMult));
+				//Left Drive -- move_velocity
+				leftFrontMotor.move_velocity(int((rightY + rightX)*motorMult));
+				leftBackMotor.move_velocity(int((rightY + rightX)*motorMult));
+			}
 		}
 		else {
 			//Right Drive -- move_velocity
@@ -113,9 +115,6 @@ void opcontrol() {
 			leftFrontMotor.move_velocity(0);
 			leftBackMotor.move_velocity(0);
 		}
-		
-
-		
 	}
 }
 //meh.io
