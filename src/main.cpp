@@ -1,18 +1,26 @@
 #include "main.h"
 #include "pros/llemu.hpp"
+#include "pros/motors.hpp"
 
-//VARIABLES - motors
+// VARIABLES - motors
 pros::Motor leftBackMotor(10);
 pros::Motor leftFrontMotor(20);
 pros::Motor rightFrontMotor(11, true);
 pros::Motor rightBackMotor(1, true);
 
-//tank drive - one stick
+// tank drive - one stick
 int rightX;
 int rightY;
-float motorMult = 1.5; //speed multiplier
+float motorMult = 1.5; // speed multiplier
 
-//FUNCTIONS
+// special 1-side drive train testing
+// REMOVE LATER
+bool isTesting = true;
+pros::Motor testFrontMtr(1);
+pros::Motor testBackMtr(2);
+
+
+// FUNCTIONS
 /**
  * A callback function for LLEMU's center button.
  *
@@ -89,17 +97,39 @@ void autonomous() {}
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 
+	//op control needs an infinite loop
 	while (true){
-		//one stick drive -- get inputs
-		rightX = master.get_analog(ANALOG_RIGHT_X);
-		rightY = master.get_analog(ANALOG_RIGHT_Y);
+		if (isTesting){
+			testFrontMtr.move_velocity(127);
+			testBackMtr.move_velocity(127);
+		}
 
-		//Right Drive -- move_velocity
-		rightFrontMotor.move_velocity(int((rightY - rightX)*motorMult));
-		rightBackMotor.move_velocity(int((rightY - rightX)*motorMult));
+		else{
+			//one stick drive -- get inputs
+			rightX = master.get_analog(ANALOG_RIGHT_X);
+			rightY = master.get_analog(ANALOG_RIGHT_Y);
 
-		//Left Drive -- move_velocity
-		leftFrontMotor.move_velocity(int((rightY + rightX)*motorMult));
-		leftBackMotor.move_velocity(int((rightY + rightX)*motorMult));
+			//deadzone of 5 units to combat controller drift
+			if (rightY || rightX > 5) {
+				if (rightY || rightX < -5){
+					//Right Drive -- move_velocity
+					rightFrontMotor.move_velocity(int((rightY - rightX)*motorMult));
+					rightBackMotor.move_velocity(int((rightY - rightX)*motorMult));
+
+					//Left Drive -- move_velocity
+					leftFrontMotor.move_velocity(int((rightY + rightX)*motorMult));
+					leftBackMotor.move_velocity(int((rightY + rightX)*motorMult));
+				}
+			}
+			else {
+				//Right Drive -- move_velocity
+				rightFrontMotor.move_velocity(0);
+				rightBackMotor.move_velocity(0);
+
+				//Left Drive -- move_velocity
+				leftFrontMotor.move_velocity(0);
+				leftBackMotor.move_velocity(0);
+			}
+		}
 	}
 }
