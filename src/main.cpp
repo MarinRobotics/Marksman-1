@@ -3,10 +3,10 @@
 #include "pros/motors.hpp"
 
 // VARIABLES - motors
-pros::Motor leftBackMotor(10);
-pros::Motor leftFrontMotor(20);
-pros::Motor rightFrontMotor(11, true);
-pros::Motor rightBackMotor(1, true);
+pros::Motor leftBackMotor(19);
+pros::Motor leftFrontMotor(9);
+pros::Motor rightFrontMotor(10, true);
+pros::Motor rightBackMotor(20, true);
 
 // tank drive - one stick
 int rightX;
